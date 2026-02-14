@@ -30,7 +30,8 @@ jobs:
 
     - name: Build & Push Docker Image
       run: |
-        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        # เปลี่ยน . เป็น ./app เพื่อชี้ไปที่โฟลเดอร์ที่มี Dockerfile
+        docker build -t $IMAGE_NAME:$IMAGE_TAG ./app
         docker push $IMAGE_NAME:$IMAGE_TAG
 
   Deploy-to-EC2:
