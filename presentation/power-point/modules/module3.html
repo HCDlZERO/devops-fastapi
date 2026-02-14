@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Hands-on Lab - DevOps 101</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .nav-item {
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-left-color: #0ea5e9;
+            font-weight: 700;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-block {
+            position: relative;
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .code-content {
+            overflow-x: auto;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .page-badge {
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .module-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .module-btn.active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .module-btn {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .module-btn.prev {
+            background-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .tab-content {
+            display: none; /* ซ่อนเนื้อหาทั้งหมดเป็นค่าเริ่มต้น */
+        }
+
+        .tab-content.active {
+            display: block; /* แสดงเนื้อหาเมื่อมี class="active" */
+            animation: fadeIn 0.4s ease-out; /* ใส่ Effect ให้ดูนุ่มนวล */
+        }
+
+        /* Explanation Box */
+        .explain-box {
+            border-left: 4px solid #3b82f6;
+            background-color: #f0f9ff;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+        .explain-title {
+            font-weight: 700;
+            color: #1e40af;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        .explain-text {
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        /* Editor Window Style */
+        .editor-window {
+            background: #1e293b;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            margin-bottom: 1rem;
+        }
+
+        .editor-header {
+            background: #0f172a;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .window-title {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-family: sans-serif;
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 0.35rem;
+        }
+
+        .window-dot {
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+        }
+
+        .browser-window {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col overflow-hidden bg-white">
+
+    <!-- Top Bar -->
+    <header class="bg-white border-b border-gray-200 h-14 flex items-center justify-between px-4 shrink-0 z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-lg shadow-md">🎓</div>
+            <div>
+                <h1 class="font-bold text-gray-800 leading-none text-sm md:text-base">DevOps 101: Module 3</h1>
+                <p class="text-[10px] text-gray-500">Hands-on Lab</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="../DevOps_v9_home.html" class="text-xs bg-gray-50 hover:bg-gray-100 px-3 py-1 rounded-full border border-gray-200 transition-colors">
+                ← Home
+            </a>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <nav class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col shrink-0 overflow-y-auto hidden md:flex pb-10">
+            <div class="p-2 space-y-0.5">
+                <div class="text-xs font-bold text-green-700 bg-green-50 py-1.5 px-3 rounded-lg">
+                    Module 3: Hands-on Lab
+                </div>
+                <button onclick="nav('p15')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs active" data-target="p15">15. Setup Tools</button>
+                <button onclick="nav('p16')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p16">16. Create Files</button>
+                <button onclick="nav('p17')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p17">17. Build & Run Local</button>
+                <button onclick="nav('p18')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p18">18. Push to Hub</button>
+                <button onclick="nav('p19')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs font-bold text-purple-700 bg-purple-50" data-target="p19">19. Install Terraform</button>
+                <button onclick="nav('p20')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs font-bold text-purple-700 bg-purple-50" data-target="p20">20. Keys & Config</button>
+                <button onclick="nav('p21')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs font-bold text-purple-700 bg-purple-50" data-target="p21">21. TF Part 1: Config & Variables</button>
+                <button onclick="nav('p22')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs font-bold text-purple-700 bg-purple-50" data-target="p22">22. TF Part 2: Security & Key</button>
+                <button onclick="nav('p23')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs font-bold text-purple-700 bg-purple-50" data-target="p23">23. TF Part 3: Script & Outputs</button>
+                <button onclick="nav('p24')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p24">24. GitHub Secrets</button>
+                <button onclick="nav('p25')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p25">25. CI/CD Workflow</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main id="mainContent" class="flex-1 overflow-y-auto bg-white p-6 md:p-10 scroll-smooth">
+
+            <!-- Module Navigation -->
+            <div class="module-nav">
+                <a href="module2.html" class="module-btn prev">← Module 2</a>
+                <span class="module-btn active">📙 Module 3</span>
+                <span class="module-btn" style="background-color: #f3f4f6; color: #9ca3af;">สิ้นสุดคอร์ส ✅</span>
+            </div>
+
+            <!--* PAGE 15: SETUP *-->
+            <section id="p15" class="max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">15. เตรียมเครื่องมือ (Lab Setup)</h2>
+                    <span class="page-badge">หน้า 15</span>
+                </div>
+
+                <div class="bg-white/95 rounded-xl p-6 shadow-lg">
+                    <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <span>📋</span> สิ่งที่ต้องเตรียม
+                    </h3>
+                    <div class="text-sm text-slate-600">
+                        <div class="flex items-center gap-2 py-1">
+                            <span class="text-green-600">✓</span>
+                            <span>AWS Account (Free Tier)</span>
+                        </div>
+                        <div class="flex items-center gap-2 py-1">
+                            <span class="text-green-600">✓</span>
+                            <span>GitHub Account</span>
+                        </div>
+                        <div class="flex items-center gap-2 py-1">
+                            <span class="text-green-600">✓</span>
+                            <span>Docker Hub Account</span>
+                        </div>
+                        <div class="flex items-center gap-2 py-1">
+                            <span class="text-green-600">✓</span>
+                            <span>Docker Desktop + VS Code (ติดตั้งแล้ว)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 mt-3 p-4 rounded-lg text-sm text-blue-800 text-center font-bold border border-blue-200">
+                    📂 สร้าง Folder ชื่อ <code>my-ai-devops</code> บน Desktop แล้วเปิดด้วย VS Code
+                </div>
+            </section>
+
+            <!--* PAGE 16: CREATE FILES *-->
+            <section id="p16" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">16. สร้าง Application</h2>
+                    <span class="page-badge">หน้า 16</span>
+                </div>
+
+                <div class="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <span>📦</span>สร้าง GitHub Repository
+                    </h3>
+
+                    <ol class="list-decimal list-inside text-sm text-slate-700 space-y-2">
+                        <li>เข้าไปที่ <span class="font-mono bg-white px-1 rounded">https://github.com</span></li>
+                        <li>กดปุ่ม <span class="font-semibold">New Repository</span></li>
+                        <li>ตั้งชื่อ Repository เช่น
+                            <span class="font-mono bg-white px-1 rounded">devops-fastapi</span>
+                        </li>
+                        <li>เลือก <span class="font-semibold">Public</span></li>
+                        <li>❌ ไม่ต้องติ๊ก README, .gitignore, License</li>
+                        <li>กด <span class="font-semibold">Create repository</span></li>
+                    </ol>
+
+                    <div class="mt-3 text-xs text-blue-700 bg-blue-100 p-2 rounded">
+                        💡 Repo นี้จะใช้เป็นจุดเริ่มต้นสำหรับ Docker, CI/CD และ GitHub Actions ในขั้นถัดไป
+                    </div>
+                </div>
+
+                <div class="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <span>⬇️</span>Download code files
+                    </h3>
+                    <div class="mt-3 text-xs text-blue-700 bg-blue-100 p-2 rounded">
+                        💡<a href="https://drive.google.com/drive/folders/1XF1gpDjXJg9qhdXukLoeMPClziQ6TXzf?usp=sharing" target="_blank">https://drive.google.com/drive/folders/1XF1gpDjXJg9qhdXukLoeMPClziQ6TXzf?usp=sharing</a>
+                    </div>
+                </div>
+
+                <div class="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <span>⚙️</span>Run code on Localhost
+                    </h3>
+                    <div class="mt-3 text-xs text-blue-700 bg-blue-100 p-2 rounded">
+                        <div class="code-block">
+                            <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                            <pre class="code-content text-green-300">pip install fastapi uvicorn</pre>
+                        </div>
+                        <div class="code-block mt-2">
+                            <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                            <pre class="code-content text-green-300">python app.py</pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!--* PAGE 17: BUILD & RUN LOCAL *-->
+            <section id="p17" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">17. Build & Run Local</h2>
+                    <span class="page-badge">หน้า 17</span>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-slate-700 mb-2">1️⃣ สร้าง Dockerfile</h3>
+                        <div class="code-block">
+                            <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                            <pre class="code-content text-yellow-100">FROM python:3.9-slim
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+CMD ["python", "app.py"]</pre>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-700 mb-2">2️⃣ Build Docker Image</h3>
+                        <div class="code-block">
+                            <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                            <pre class="code-content text-green-300">docker build -t my-app .</pre>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-700 mb-2">3️⃣ Run Container</h3>
+                        <div class="code-block">
+                            <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                            <pre class="code-content text-blue-300">docker run -d -p 8000:8000 my-app</pre>
+                        </div>
+                        <p class="text-xs text-green-600 font-bold mt-2">✅ เข้า http://localhost:8000 ดูผลว่า</p>
+                    </div>
+                </div>
+            </section>
+
+            <!--* PAGE 18: PUSH TO HUB *-->
+            <section id="p18" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">18. Push Image ไปยัง Docker Hub</h2>
+                    <span class="page-badge">หน้า 18</span>
+                </div>
+
+                <!-- Concept Visual -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-xl mb-8 flex flex-col md:flex-row items-center justify-around gap-6 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 text-9xl opacity-5 pointer-events-none">☁️</div>
+                    
+                    <div class="text-center z-10">
+                        <div class="bg-white p-3 rounded-lg shadow-sm mb-2 inline-block">
+                            <span class="text-3xl">💻</span>
+                        </div>
+                        <p class="text-xs font-bold text-slate-600">Local Machine</p>
+                    </div>
+
+                    <div class="flex flex-col items-center z-10">
+                        <span class="text-[10px] text-blue-500 font-mono bg-white px-2 py-0.5 rounded border border-blue-100 mb-1">docker push</span>
+                        <div class="w-24 h-0.5 bg-blue-300 relative">
+                            <div class="absolute right-0 -top-1 w-2 h-2 border-t-2 border-r-2 border-blue-300 transform rotate-45"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-center z-10">
+                        <div class="bg-white p-3 rounded-lg shadow-sm mb-2 inline-block">
+                            <span class="text-3xl">🐳</span>
+                        </div>
+                        <p class="text-xs font-bold text-slate-600">Docker Hub</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Step 1 -->
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-sm">1</div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-slate-700 text-sm mb-1">Login เข้าสู่ระบบ</h3>
+                            <p class="text-xs text-slate-500 mb-2">เชื่อมต่อเครื่องเรากับ Docker Hub Account</p>
+                            <div class="code-block">
+                                <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                                <pre class="code-content text-green-400">docker login</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-sm">2</div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-slate-700 text-sm mb-1">Tag Image (เปลี่ยนชื่อ)</h3>
+                            <p class="text-xs text-slate-500 mb-2">ตั้งชื่อใหม่ให้มี username นำหน้า เพื่อระบุเจ้าของ</p>
+                            <div class="code-block">
+                                <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                                <pre class="code-content text-yellow-300">docker tag my-ai-app <span class="text-white bg-red-500/20 px-1 rounded">username</span>/my-ai-app:v1</pre>
+                            </div>
+                            <p class="text-[10px] text-red-500 mt-1 italic">*เปลี่ยน `username` เป็น Docker ID ของคุณ</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-sm">3</div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-slate-700 text-sm mb-1">Push (อัปโหลด)</h3>
+                            <p class="text-xs text-slate-500 mb-2">ส่ง Image ขึ้นไปเก็บบน Cloud</p>
+                            <div class="code-block">
+                                <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                                <pre class="code-content text-blue-300">docker push <span class="text-white bg-red-500/20 px-1 rounded">username</span>/my-ai-app:v1</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!--* PAGE 19: INSTALL TERRAFORM *-->
+            <section id="p19" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">19. ติดตั้ง Terraform (Installation)</h2>
+                    <span class="page-badge">หน้า 19</span>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r">
+                    <strong class="text-yellow-800 text-sm">⚠️ ก่อนไปต่อ:</strong>
+                    <p class="text-xs text-yellow-700">ต้องติดตั้ง Terraform ลงในเครื่องก่อนจึงจะสั่งงาน AWS ได้</p>
+                </div>
+
+                <!-- Tabs for OS -->
+                <div class="mb-4 border-b border-gray-200">
+                    <div class="flex gap-4">
+                        <button onclick="showTab('win')" id="btn-win" class="tab-btn active border-b-2 border-blue-500 text-blue-600 font-bold pb-2">Windows</button>
+                        <button onclick="showTab('mac')" id="btn-mac" class="tab-btn text-gray-500 pb-2">macOS</button>
+                    </div>
+                </div>
+
+                <!-- Windows Content -->
+                <div id="tab-win" class="tab-content active space-y-4">
+                    <div class="bg-white border p-4 rounded-lg shadow-sm">
+                        <strong class="block text-slate-700 mb-2">วิธีที่ 1: ใช้ Chocolatey (แนะนำ)</strong>
+                        <p class="text-xs text-slate-500 mb-2">เปิด PowerShell แบบ Administrator แล้วรัน:</p>
+                        <div class="bg-slate-900 text-white p-3 rounded font-mono text-sm">choco install terraform</div>
+                    </div>
+                    <div class="bg-white border p-4 rounded-lg shadow-sm">
+                        <strong class="block text-slate-700 mb-2">วิธีที่ 2: โหลดไฟล์เอง</strong>
+                        <ol class="list-decimal list-inside text-xs text-slate-600 space-y-1">
+                            <li>ไปที่ <a href="https://developer.hashicorp.com/terraform/install" target="_blank" class="text-blue-500 underline">Terraform Downloads</a></li>
+                            <li>โหลดเวอร์ชัน Windows (AMD64)</li>
+                            <li>แตกไฟล์ <code>terraform.exe</code> ไปไว้ที่ <code>C:\Windows\System32</code></li>
+                        </ol>
+                    </div>
+                    <!-- Verify -->
+                    <div class="mt-4 bg-slate-800 text-white p-4 rounded-xl text-center">
+                        <p class="text-sm mb-2 font-bold text-slate-300">✅ ตรวจสอบว่าติดตั้งสำเร็จหรือไม่</p>
+                        <code class="bg-black px-3 py-1 rounded text-green-400 font-mono">terraform -version</code>
+                        <p class="text-xs text-slate-400 mt-2">ถ้าขึ้นเลขเวอร์ชัน (เช่น v1.6.x) แปลว่าพร้อมลุย!</p>
+                    </div>
+                </div>
+
+                <!-- Mac Content -->
+                <div id="tab-mac" class="tab-content space-y-4">
+                    <div class="bg-white border p-4 rounded-lg shadow-sm">
+                        <strong class="block text-slate-700 mb-2">วิธีที่ 1: ใช้ Homebrew (ง่ายมาก)</strong>
+                        <p class="text-xs text-slate-500 mb-2">เปิด Terminal แล้วรัน:</p>
+                        <div class="bg-slate-900 text-white p-3 rounded-lg font-mono text-sm relative mb-1 text-left">
+                            <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                            <code class="block">brew tap hashicorp/tap</code>
+                        </div>
+                        <div class="bg-slate-900 text-white p-3 rounded-lg font-mono text-sm relative mb-1 text-left">
+                            <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                            <code class="block">brew install hashicorp/tap/terraform</code>
+                    </div>
+                    <!-- Verify -->
+                    <div class="mt-4 bg-slate-800 text-white p-4 rounded-xl text-center">
+                        <p class="text-sm mb-2 font-bold text-slate-300">✅ ตรวจสอบว่าติดตั้งสำเร็จหรือไม่</p>
+                        <code class="bg-black px-3 py-1 rounded text-green-400 font-mono">terraform -version</code>
+                        <p class="text-xs text-slate-400 mt-2">ถ้าขึ้นเลขเวอร์ชัน (เช่น v1.6.x) แปลว่าพร้อมลุย!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!--* PAGE 20: KEYS & CONFIG *-->
+            <section id="p20" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">20. เตรียมกุญแจและโค้ด (Keys & Config)</h2>
+                    <span class="page-badge">หน้า 20</span>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Step 1: AWS Credentials -->
+                    <div class="bg-purple-50 border border-purple-200 p-6 rounded-xl relative">
+                        <span class="absolute -top-3 -left-3 bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm">1</span>
+                        <h3 class="font-bold text-purple-900 text-lg mb-2">Login เข้า AWS (สำหรับ Terraform)</h3>
+                        <p class="text-sm text-purple-800 mb-4">
+                            Terraform ต้องการ <strong>"บัตรผ่าน"</strong> (Credentials) เพื่อเข้าไปสร้าง Server ให้เรา
+                        </p>
+
+                        <div class="bg-white p-5 rounded-lg border border-purple-100 shadow-sm">
+                            <strong class="text-slate-700 text-xs font-bold uppercase block mb-3">วิธีหา Key:</strong>
+                            <ol class="list-decimal pl-5 text-sm text-slate-700 space-y-3 mb-4">
+                                <li>
+                                    ไปที่ <a href="https://console.aws.amazon.com" target="_blank" class="text-blue-600 hover:underline">AWS Console</a> 
+                                    และค้นหาเมนู <strong>IAM</strong>
+                                </li>
+
+                                <li>
+                                    เมนูด้านซ้าย เลือก <strong>Users</strong> แล้วกดปุ่ม <strong>Create user</strong>
+                                </li>
+
+                                <li>
+                                    ตั้งชื่อ <strong>User name</strong> (เช่น <code>terraform-user</code>) 
+                                    จากนั้นกด <strong>Next</strong>
+                                </li>
+
+                                <li>
+                                    ในขั้นตอน <strong>Set permissions</strong> 
+                                    เลือก <strong>Attach policies directly</strong>
+                                    แล้วเลือก Policy ต่อไปนี้
+                                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                                        <li><strong>AmazonEC2FullAccess</strong></li>
+                                        <li><strong>AmazonVPCFullAccess</strong></li>
+                                    </ul>
+                                    <span class="block mt-1 text-xs text-slate-500">
+                                        (สำหรับการเรียนหรือทดลอง สามารถใช้สิทธิ์ระดับนี้ได้)
+                                    </span>
+                                    จากนั้นกด <strong>Next</strong> → <strong>Create user</strong>
+                                </li>
+
+                                <li>
+                                    เมื่อสร้าง User เสร็จ ให้คลิกชื่อ User ที่สร้างขึ้นมา
+                                    แล้วเลือกแท็บ <strong>Security credentials</strong>
+                                </li>
+
+                                <li>
+                                    ในส่วน <strong>Access keys</strong> กดปุ่ม <strong>Create access key</strong>
+                                    แล้วเลือก <strong>Command Line Interface (CLI)</strong>
+                                </li>
+
+                                <li>
+                                    กด <strong>Next</strong> → <strong>Create access key</strong> 
+                                    แล้ว <span class="text-red-600 font-bold bg-red-50 px-1 rounded">
+                                    คัดลอก Access Key ID และ Secret Access Key เก็บไว้ทันที (สามารถดูได้เพียงครั้งเดียว)
+                                    </span>
+                                </li>
+                            </ol>
+                            <div class="bg-purple-100 text-purple-900 p-2 rounded text-xs">
+                                💡 นำ Key และ Secret ที่ได้ ไปใส่ใน Environment Variables หรือไฟล์ credentials (ในขั้นตอนถัดไป)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: SSH Key (Moved from P19 original) -->
+                    <div class="bg-indigo-50 border border-indigo-200 p-6 rounded-xl relative">
+                        <span class="absolute -top-3 -left-3 bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm">3</span>
+                        <h3 class="font-bold text-indigo-900 text-lg mb-2">สร้างกุญแจเข้าบ้าน (SSH Key)</h3>
+                        <p class="text-sm text-indigo-800 mb-4">
+                            เราต้องมีกุญแจดิจิทัลเพื่อไขเข้าไปจัดการ Server (EC2)
+                        </p>
+
+                        <div class="bg-white p-5 rounded-lg border border-indigo-100 shadow-sm text-center">
+                            <p class="text-xs text-slate-500 mb-2 text-left font-bold uppercase">รันคำสั่งนี้ใน Terminal (VS Code):</p>
+                            <div class="bg-slate-900 text-white p-3 rounded-lg font-mono text-sm relative mb-3 text-left">
+                                <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                                <code class="block text-green-400">ssh-keygen -t ed25519 -f &lt;keypair_name in variables.tf&gt; -N ""</code>
+                            </div>
+                            <div class="mt-3 text-sm text-slate-600 text-left pl-2 border-l-2 border-slate-300">
+                                <strong>ผลลัพธ์:</strong> จะได้ไฟล์ <code>terraform-ec2-key</code> (Private - เก็บไว้) และ <code>terraform-ec2-key.pub</code> (Public - ใช้ฝาก AWS)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!--* PAGE 21: PROVISION SERVER *-->
+            <section id="p21" class="hidden max-w-5xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">21. TF Part 1: Config & Variables</h2>
+                    <span class="page-badge">หน้า 21</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- provider-ec2.tf -->
+                    <div>
+                        <div class="explain-box">
+                            <h4 class="explain-title">1. provider-ec2.tf (ไฟล์หลัก)</h4>
+                            <p class="explain-text">
+                                เปรียบเสมือน "ใบสั่งงานหลัก" ที่บอกว่าเราจะใช้เครื่องมืออะไร (AWS Version ไหน) และจะสร้างอะไร (EC2 Instance) <br>
+                                - <code>provider "aws"</code>: บอก Terraform ว่าให้คุยกับ AWS โดยใช้ Key ที่เรามี<br>
+                                - <code>resource "aws_instance"</code>: สั่งสร้างเครื่อง Server จริงๆ
+                            </p>
+                        </div>
+                        <div class="editor-window border border-slate-700">
+                            <div class="editor-header">
+                                <div class="window-dots"><div class="window-dot bg-red-500"></div><div class="window-dot bg-yellow-500"></div><div class="window-dot bg-green-500"></div></div>
+                                <span class="window-title">provider-ec2.tf (ไฟล์หลัก)</span>
+                            </div>
+                            <div class="relative group">
+                                <button onclick="copyCode(this)" class="copy-btn top-2 right-2">Copy</button>
+                                <pre class="code-content text-purple-300">
+terraform {
+  required_providers {
+    aws = { 
+      source  = "hashicorp/aws"
+      version = "~> 4.67.0" 
+    }
+  }
+}
+
+provider "aws" { 
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
+  region     = var.aws_region
+}
+
+resource "aws_instance" "biovanta_ec2" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = aws_key_pair.ec2_key.key_name
+  vpc_security_group_ids = [aws_security_group.ssh_sg.id]
+  user_data              = file("${path.module}/user_docker.sh")
+
+  tags = {
+    Name = local.instance_name
+  }
+}</pre>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-2 text-[10px] text-slate-500 border-t border-slate-700">
+                                # กำหนด Provider และสร้าง Resource หลัก (EC2)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- variables.tf -->
+                    <div>
+                        <div class="explain-box">
+                            <h4 class="explain-title">2. variables.tf (สมุดจดค่าตัวแปร)</h4>
+                            <p class="explain-text">
+                                ใช้สำหรับเก็บค่าต่างๆ ที่เราไม่อยากเขียนฝัง (Hardcode) ลงไปในไฟล์หลัก ทำให้แก้ไขง่าย เช่น ถ้าอยากเปลี่ยนชื่อโปรเจกต์ ก็มาแก้ที่ไฟล์นี้ไฟล์เดียว
+                            </p>
+                        </div>
+                        <div class="editor-window border border-slate-700">
+                            <div class="editor-header">
+                                <div class="window-dots"><div class="window-dot bg-red-500"></div><div class="window-dot bg-yellow-500"></div><div class="window-dot bg-green-500"></div></div>
+                                <span class="window-title">variables.tf (ตัวแปรกลาง)</span>
+                            </div>
+                            <div class="relative group">
+                                <button onclick="copyCode(this)" class="copy-btn top-2 right-2">Copy</button>
+                                <pre class="code-content text-blue-300">
+# variables.tf - Config ที่เป็นศูนย์กลาง
+
+# *=== Project Name ===*
+variable "project_name" {
+  default = "biovanta"
+}
+
+variable "environment" {
+  default = "dev"
+}
+
+variable "instance_number" {
+  default = "00"
+}
+
+# *=== AWS Credentials ===*
+variable "aws_access_key_id" {
+  default = "AKIATC4J3ILIPY72J4B2BIW"
+}
+variable "aws_secret_access_key" {
+  default = "y/udb5jl/Zk1QKkBINEAr8yHGH0Bh60AW+4wp+/oBIW"
+  sensitive = true
+}
+variable "aws_region" {
+  default = "ap-southeast-1"
+}
+
+# *=== EC2 Configuration ===*
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+variable "ami_id" {
+  default = "ami-0c687e8f5c4e54af5"
+}
+
+# *=== Keypair Configuration ===*
+variable "keypair_name" {
+  default = "terraform-ec2-key"
+}
+
+# *=== Security Group Configuration ===*
+variable "sg_name" {
+  default = "terraform-ssh-sg"
+}
+
+variable "sg_description" {
+  default = "Allow SSH access"
+}
+
+# *=== Local variables for naming ===*
+locals {
+  instance_name    = "${var.project_name}-${var.environment}-${var.instance_number}"
+  sg_name          = "${var.sg_name}-${var.instance_number}"
+}</pre>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-2 text-[10px] text-slate-500 border-t border-slate-700">
+                                # ประกาศตัวแปรทั้งหมดที่ใช้ในโปรเจกต์
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-slate-100 rounded-xl text-center border-2 border-dashed border-slate-300">
+                    <h4 class="font-bold text-slate-700 mb-2">🚀 พร้อมแล้ว! สั่งรันเลย</h4>
+                    <div class="flex justify-center gap-4">
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform init</code>
+                        <p class="px-1 py-2 rounded-lg font-mono text-bold">➡️</p>
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform plan</code>
+                        <p class="px-1 py-2 rounded-lg font-mono text-bold">➡️</p>
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform apply --auto-approve</code>
+                    </div>
+                </div>
+            </section>
+
+            <!--* PAGE 22: GITHUB SECRETS *-->
+            <section id="p22" class="hidden max-w-5xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">22. TF Part 2: Security & Key</h2>
+                    <span class="page-badge">หน้า 22</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- keypair.tf -->
+                    <div>
+                        <div class="explain-box">
+                            <h4 class="explain-title">3. keypair.tf (กุญแจเข้าบ้าน)</h4>
+                            <p class="explain-text">
+                                ใช้สำหรับส่ง "แม่กุญแจ" (Public Key) ที่เราสร้างไว้ในเครื่อง (.pub) ขึ้นไปฝากไว้บน AWS เพื่อให้เราสามารถไขเข้า Server ได้ภายหลัง
+                            </p>
+                        </div>
+                        <div class="editor-window border border-slate-700">
+                            <div class="editor-header">
+                                <div class="window-dots"><div class="window-dot bg-red-500"></div><div class="window-dot bg-yellow-500"></div><div class="window-dot bg-green-500"></div></div>
+                                <span class="window-title">keypair.tf (กุญแจ)</span>
+                            </div>
+                            <div class="relative group">
+                                <button onclick="copyCode(this)" class="copy-btn top-2 right-2">Copy</button>
+                                <pre class="code-content text-yellow-200">
+resource "aws_key_pair" "ec2_key" {
+  key_name   = var.keypair_name
+  public_key = file("${var.keypair_name}.pub")
+}</pre>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-2 text-[10px] text-slate-500 border-t border-slate-700">
+                                # อ่านไฟล์ Public Key (.pub) ที่เราสร้างไว้ส่งไป AWS
+                            </div>
+                        </div>
+
+                        <div class="explain-box">
+                            <h4 class="explain-title">4. provider-ec2.tf (ไฟล์หลัก)</h4>
+                            <p class="explain-text">
+                                ทำการเพิ่ม code <code>key_name</code> ใน resource "aws_instance" เพื่อบอกว่าให้ใช้กุญแจที่เราสร้างไว้ จากข้อก่อนหน้า
+                            </p>
+                        </div> 
+                        <div class="editor-window border border-slate-700">
+                            <div class="editor-header">
+                                <div class="window-dots"><div class="window-dot bg-red-500"></div><div class="window-dot bg-yellow-500"></div><div class="window-dot bg-green-500"></div></div>
+                                <span class="window-title">provider-ec2.tf (ไฟล์หลัก)</span>
+                            </div>
+                            <div class="relative group">
+                                <button onclick="copyCode(this)" class="copy-btn top-2 right-2">Copy</button>
+                                <pre class="code-content text-purple-300">
+resource "aws_instance" "biovanta_ec2" {
+  key_name               = aws_key_pair.ec2_key.key_name
+}</pre>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-2 text-[10px] text-slate-500 border-t border-slate-700">
+                                # อ่านไฟล์ Public Key (.pub) ที่เราสร้างไว้ส่งไป AWS
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- security_group.tf -->
+                    <div>
+                        <div class="explain-box">
+                            <h4 class="explain-title">5. security_group.tf (รปภ. หมู่บ้าน)</h4>
+                            <p class="explain-text">
+                                กำหนดกฎการเข้า-ออก (Firewall) <br>
+                                - <code>ingress (ขาเข้า)</code>: อนุญาตให้ใครเข้าได้บ้าง (Port 22 SSH, 80 HTTP)<br>
+                                - <code>egress (ขาออก)</code>: อนุญาตให้ Server ออกไปข้างนอกได้ไหม (ปกติเปิดหมด)
+                            </p>
+                        </div>
+                        <div class="editor-window border border-slate-700">
+                            <div class="editor-header">
+                                <div class="window-dots"><div class="window-dot bg-red-500"></div><div class="window-dot bg-yellow-500"></div><div class="window-dot bg-green-500"></div></div>
+                                <span class="window-title">security_group.tf (ไฟร์วอลล์)</span>
+                            </div>
+                            <div class="relative group">
+                                <button onclick="copyCode(this)" class="copy-btn top-2 right-2">Copy</button>
+                                <pre class="code-content text-red-300">
+resource "aws_security_group" "ssh_sg" {
+  name        = local.sg_name
+  description = var.sg_description
+
+  ingress {
+    description = "SSH (lab only)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}</pre>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-2 text-[10px] text-slate-500 border-t border-slate-700">
+                                # เปิด Port 22 (SSH) และ 80 (Web) ให้เข้าได้จากทุกที่
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-slate-100 rounded-xl text-center border-2 border-dashed border-slate-300">
+                    <h4 class="font-bold text-slate-700 mb-2">🚀 พร้อมแล้ว! สั่งรันเลย</h4>
+                    <div class="flex justify-center gap-4">
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform init</code>
+                        <p class="px-1 py-2 rounded-lg font-mono text-bold">➡️</p>
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform plan</code>
+                        <p class="px-1 py-2 rounded-lg font-mono text-bold">➡️</p>
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform apply --auto-approve</code>
+                    </div>
+                    <span class="text-red-600 font-bold bg-red-50 px-3 rounded inline-block mt-3">
+                        Public IP อาจจะเปลี่ยนทุกครั้งที่สร้างใหม่ (โปรดระวัง!)
+                    </span>
+                </div>
+            </section>
+
+            <!--* PAGE 23: CI/CD WORKFLOW *-->
+            <section id="p23" class="hidden max-w-5xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">23. TF Part 3: Script & Outputs</h2>
+                    <span class="page-badge">หน้า 23</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- user_docker.sh -->
+                    <div>
+                        <div class="explain-box">
+                            <h4 class="explain-title">5. user_docker.sh (คำสั่งแรกพบ)</h4>
+                            <p class="explain-text">
+                                Script นี้จะถูกรัน <strong>อัตโนมัติ</strong> ทันทีที่เครื่องเปิดขึ้นมาครั้งแรก (User Data) <br>
+                                หน้าที่คือ: ติดตั้ง Docker, Git, Nginx และตั้งค่าสิทธิ์ให้พร้อมใช้งานทันที
+                            </p>
+                        </div>
+                        <div class="editor-window border border-slate-700">
+                            <div class="editor-header">
+                                <div class="window-dots"><div class="window-dot bg-red-500"></div><div class="window-dot bg-yellow-500"></div><div class="window-dot bg-green-500"></div></div>
+                                <span class="window-title">user_docker.sh (สคริปต์เริ่มระบบ)</span>
+                            </div>
+                            <div class="relative group">
+                                <button onclick="copyCode(this)" class="copy-btn top-2 right-2">Copy</button>
+                                <pre class="code-content text-green-300">
+#!/bin/bash
+set -ex
+
+apt update
+apt install -y docker.io git nodejs npm nginx
+
+systemctl start docker
+systemctl enable docker
+
+systemctl start nginx
+systemctl enable nginx
+
+usermod -aG docker ubuntu</pre>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-2 text-[10px] text-slate-500 border-t border-slate-700">
+                                # สั่งรันอัตโนมัติทันทีที่เครื่องเปิด (Cloud-Init)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- outputs.tf -->
+                    <div>
+                        <div class="explain-box">
+                            <h4 class="explain-title">6. outputs.tf (ใบรายงานผล)</h4>
+                            <p class="explain-text">
+                                เมื่อสร้างเสร็จ Terraform จะ "ปริ้นท์" ข้อมูลสำคัญออกมาให้เราดู <br>
+                                - <code>public_ip</code>: เลขที่บ้าน (IP) ของ Server<br>
+                                - <code>ssh_command</code>: คำสั่งสำหรับ Remote เข้าไปใช้งาน
+                            </p>
+                        </div>
+                        <div class="editor-window border border-slate-700">
+                            <div class="editor-header">
+                                <div class="window-dots"><div class="window-dot bg-red-500"></div><div class="window-dot bg-yellow-500"></div><div class="window-dot bg-green-500"></div></div>
+                                <span class="window-title">outputs.tf (ผลลัพธ์)</span>
+                            </div>
+                            <div class="relative group">
+                                <button onclick="copyCode(this)" class="copy-btn top-2 right-2">Copy</button>
+                                <pre class="code-content text-orange-300">
+output "instance_id" {
+  description = "EC2 Instance ID"
+  value       = aws_instance.biovanta_ec2.id
+}
+
+output "instance_name" {
+  description = "EC2 Name tag"
+  value       = aws_instance.biovanta_ec2.tags["Name"]
+}
+
+output "public_ip" {
+  description = "EC2 Public IP"
+  value       = aws_instance.biovanta_ec2.public_ip
+}
+
+output "ssh_command" {
+  description = "SSH command"
+  value       = "ssh -i ${var.keypair_name} ubuntu@${aws_instance.biovanta_ec2.public_ip}"
+}</pre>
+                            </div>
+                            <div class="bg-slate-800 px-4 py-2 text-[10px] text-slate-500 border-t border-slate-700">
+                                # แสดงข้อมููลสำคัญหลังสร้างเสร็จ (เช่น IP, วิธี SSH)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-slate-100 rounded-xl text-center border-2 border-dashed border-slate-300">
+                    <h4 class="font-bold text-slate-700 mb-2">🚀 พร้อมแล้ว! สั่งรันเลย</h4>
+                    <div class="flex justify-center gap-4">
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform init</code>
+                        <p class="px-1 py-2 rounded-lg font-mono text-bold">➡️</p>
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform plan</code>
+                        <p class="px-1 py-2 rounded-lg font-mono text-bold">➡️</p>
+                        <code class="bg-black text-green-400 px-3 py-2 rounded-lg font-mono text-sm">terraform apply --auto-approve</code>
+                    </div>
+                    <span class="text-red-600 font-bold bg-red-50 px-3 rounded inline-block mt-3">
+                        Public IP อาจจะเปลี่ยนทุกครั้งที่สร้างใหม่ (โปรดระวัง!)
+                    </span>
+                </div>
+            </section>
+
+            <!--* PAGE 24: CI/CD WORKFLOW *-->
+            <section id="p24" class="hidden max-w-5xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">24. ตั้งค่า GitHub Secrets (กุญแจลับ)</h2>
+                    <span class="page-badge">หน้า 24</span>
+                </div>
+
+                <!-- Intro -->
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-8 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🔐</span>
+                        <div>
+                            <h3 class="font-bold text-blue-900 text-lg">ทำไมต้องใช้ Secrets?</h3>
+                            <p class="text-sm text-blue-800">
+                                เราห้ามเก็บรหัสผ่านหรือ Key ไว้ในโค้ด (Hardcode) เด็ดขาด! <br>
+                                GitHub Secrets ช่วยให้เราส่งค่าความลับเหล่านี้ไปให้ CI/CD Pipeline ใช้งานได้อย่างปลอดภัย
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Guide -->
+                <div class="mb-8 text-center">
+                    <p class="text-sm text-slate-600 mb-2">ไปที่ Repository ของคุณบน GitHub แล้วทำตามนี้:</p>
+                    <div class="inline-flex items-center gap-2 text-xs font-bold text-slate-700 bg-white px-4 py-2 rounded-full border shadow-sm flex-wrap justify-center">
+                        <span>Settings</span>
+                        <span>→</span>
+                        <span>Secrets and variables</span>
+                        <span>→</span>
+                        <span>Actions</span>
+                        <span>→</span>
+                        <span class="text-green-600 border border-green-200 px-2 py-1 rounded bg-green-50">New repository secret</span>
+                    </div>
+                </div>
+
+                <!-- Secrets List -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    
+                    <!-- Docker Hub Group -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition">
+                        <div class="bg-blue-600 px-4 py-3 flex items-center justify-between">
+                            <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                                <span>🐳</span> Docker Hub Config
+                            </h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <label class="text-xs font-bold text-slate-700">1. DOCKER_USERNAME</label>
+                                    <span class="text-[10px] text-slate-400">Docker ID ของคุณ</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-50 p-2 rounded border border-slate-200">
+                                    <code class="text-xs text-blue-600 flex-1">ex: devops_student</code>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <label class="text-xs font-bold text-slate-700">2. DOCKER_PASSWORD</label>
+                                    <span class="text-[10px] text-slate-400">Password หรือ Token</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-50 p-2 rounded border border-slate-200">
+                                    <code class="text-xs text-slate-500 flex-1">******</code>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <label class="text-xs font-bold text-slate-700">3. DOCKER_REPO</label>
+                                    <span class="text-[10px] text-slate-400">Format: username/repo</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-50 p-2 rounded border border-slate-200">
+                                    <code class="text-xs text-blue-600 flex-1">ex: devops_student/my-ai-app</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AWS EC2 Group -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition">
+                        <div class="bg-orange-500 px-4 py-3 flex items-center justify-between">
+                            <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                                <span>☁️</span> AWS EC2 Config
+                            </h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <label class="text-xs font-bold text-slate-700">4. EC2_HOST</label>
+                                    <span class="text-[10px] text-slate-400">Public IP จาก Terraform Output</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-50 p-2 rounded border border-slate-200">
+                                    <code class="text-xs text-orange-600 flex-1">ex: 54.169.xx.xx</code>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <label class="text-xs font-bold text-slate-700">5. EC2_USER</label>
+                                    <span class="text-[10px] text-slate-400">Default User ของ OS</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-50 p-2 rounded border border-slate-200">
+                                    <code class="text-xs text-slate-600 flex-1">ubuntu (ถ้าใช้ Ubuntu AMI)</code>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1 italic">*ใช้ <code>ec2-user</code> ถ้าเป็น Amazon Linux</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <label class="text-xs font-bold text-slate-700">6. EC2_SSH_PRIVATE_KEY</label>
+                                    <span class="text-[10px] text-slate-400">เนื้อหาไฟล์ Private Key</span>
+                                </div>
+                                <div class="bg-slate-100 p-2 rounded border border-slate-200 text-[10px] text-slate-400 font-mono overflow-hidden h-8 relative">
+                                    -----BEGIN RSA PRIVATE KEY-----...
+                                    <div class="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-slate-100 to-transparent"></div>
+                                </div>
+                                <p class="text-[10px] text-red-500 mt-1">*เปิดไฟล์ <code>terraform-ec2-key</code> (ไม่มีนามสกุล) แล้วก๊อปมาให้หมด</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center bg-green-50 p-4 rounded-xl border border-green-200">
+                    <p class="text-sm text-green-800 font-bold">✅ เมื่อเพิ่มครบทั้ง 6 ตัวแล้ว เราก็พร้อมที่จะสร้าง Pipeline ในหน้าถัดไป!</p>
+                </div>
+            </section>
+
+            <!--* PAGE 25: CI/CD WORKFLOW *-->
+            <section id="p25" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">25. สร้าง CI/CD Pipeline</h2>
+                    <span class="page-badge">หน้า 25</span>
+                </div>
+
+                <p class="text-sm text-slate-600 mb-3">สร้างไฟล์ <code>.github/workflows/deploy.yml</code>:</p>
+
+                <div class="code-block text-sm max-h-100 overflow-y-auto">
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                    <pre class="code-content text-green-300">
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  DOCKER_APP_NAME: bio-vanta-presentation
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+  IMAGE_TAG: presentation-01
+
+jobs:
+  Build-and-Push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+          -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build & Push Docker Image
+      run: |
+        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker push $IMAGE_NAME:$IMAGE_TAG
+
+  Deploy-to-EC2:
+    needs: Build-and-Push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: SSH and Deploy
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        script: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+            -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          
+          docker pull $IMAGE_NAME:$IMAGE_TAG
+          docker stop ${{ env.DOCKER_APP_NAME }} || true
+          docker rm ${{ env.DOCKER_APP_NAME }} || true
+          docker run -d --name ${{ env.DOCKER_APP_NAME }} -p 80:80 $IMAGE_NAME:$IMAGE_TAG</pre>
+                </div>
+
+                <div class="mt-6 p-4 bg-green-50 rounded-lg border border-green-200 text-center">
+                    <p class="text-sm font-bold text-green-800 mb-2">🚀 ทำเสร็จแล้ว!</p>
+                    <p class="text-xs text-green-700">push โค้ด → GitHub Action ทำงาน → Server update อัตโนมัติ</p>
+                </div>
+            </section>
+
+            <div class="mt-12 flex justify-between max-w-4xl mx-auto">
+                <a href="module2.html" class="text-blue-600 hover:text-blue-800 font-semibold">← Back to Module 2</a>
+                <span class="text-green-600 font-semibold">✅ Congratulations!</span>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function nav(targetId) {
+            document.querySelectorAll('section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.classList.remove('hidden');
+                void target.offsetWidth;
+                target.classList.add('fade-in');
+            }
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.target === targetId) btn.classList.add('active');
+            });
+            document.getElementById('mainContent').scrollTop = 0;
+            localStorage.setItem('currentPage', targetId);
+            window.location.hash = targetId;
+        }
+
+        function copyCode(btn) {
+            navigator.clipboard.writeText(btn.nextElementSibling.innerText).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied!";
+                btn.style.background = "#22c55e";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = "";
+                }, 2000);
+            });
+        }
+
+        function initPage() {
+            let pageToShow = 'p15';
+            if (window.location.hash) {
+                const hashPage = window.location.hash.substring(1);
+                if (document.getElementById(hashPage)) {
+                    pageToShow = hashPage;
+                }
+            } else if (localStorage.getItem('currentPage')) {
+                const savedPage = localStorage.getItem('currentPage');
+                if (document.getElementById(savedPage)) {
+                    pageToShow = savedPage;
+                }
+            }
+            nav(pageToShow);
+        }
+
+        function showTab(os) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'border-b-2', 'border-blue-500', 'text-blue-600', 'font-bold');
+                el.classList.add('text-gray-500');
+            });
+            
+            document.getElementById(`tab-${os}`).classList.add('active');
+            const btn = document.getElementById(`btn-${os}`);
+            btn.classList.add('active', 'border-b-2', 'border-blue-500', 'text-blue-600', 'font-bold');
+            btn.classList.remove('text-gray-500');
+        }
+
+        initPage();
+    </script>
+</body>
+
+</html>

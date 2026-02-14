@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Docker & Terraform - DevOps 101</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .nav-item {
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-left-color: #0ea5e9;
+            font-weight: 700;
+        }
+
+        .section-header {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin: 1rem 0 0.25rem 0.5rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-block {
+            position: relative;
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .code-content {
+            overflow-x: auto;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .page-badge {
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .module-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .module-btn.active {
+            background-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .module-btn {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .module-btn:hover {
+            background-color: #e5e7eb;
+        }
+
+        .module-btn.next {
+            background-color: #d1d5db;
+            color: #374151;
+        }
+
+        .module-btn.next:hover {
+            background-color: #d1d5db;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col overflow-hidden bg-white">
+
+    <!-- Top Bar -->
+    <header class="bg-white border-b border-gray-200 h-14 flex items-center justify-between px-4 shrink-0 z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-lg shadow-md">🎓</div>
+            <div>
+                <h1 class="font-bold text-gray-800 leading-none text-sm md:text-base">DevOps 101: Module 2</h1>
+                <p class="text-[10px] text-gray-500">Docker & Terraform</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="../DevOps_v9_home.html" class="text-xs bg-gray-50 hover:bg-gray-100 px-3 py-1 rounded-full border border-gray-200 transition-colors">
+                ← Home
+            </a>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <nav class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col shrink-0 overflow-y-auto hidden md:flex pb-10">
+            <div class="p-2 space-y-0.5">
+                <div class="section-header w-full text-left py-1.5 rounded-lg text-xs bg-blue-50 font-bold text-blue-700">
+                    Module 2: Docker & Terraform
+                </div>
+                <button onclick="nav('p6')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs active" data-target="p6">6. Docker คืออะไร?</button>
+                <button onclick="nav('p7')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p7">7. Docker Structure</button>
+                <button onclick="nav('p8')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p8">8. Docker Workflow</button>
+                <button onclick="nav('p9')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p9">9. IaC Definition</button>
+                <button onclick="nav('p10')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p10">10. Benefits of IaC</button>
+                <button onclick="nav('p11')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p11">11. Manual vs IaC</button>
+                <button onclick="nav('p12')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p12">12. Terraform Intro</button>
+                <button onclick="nav('p13')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p13">13. Terraform Workflow</button>
+                <button onclick="nav('p14')" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-xs" data-target="p14">14. CI/CD Flow Diagram</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main id="mainContent" class="flex-1 overflow-y-auto bg-white p-6 md:p-10 scroll-smooth">
+
+            <!-- Module Navigation -->
+            <div class="module-nav">
+                <a href="module1.html" class="module-btn">← Module 1</a>
+                <span class="module-btn active">📗 Module 2</span>
+                <a href="module3.html" class="module-btn next">Module 3 →</a>
+            </div>
+
+            <!-- PAGE 6: DOCKER -->
+            <section id="p6" class="max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">6. Docker คืออะไร? (แบบเข้าใจง่าย)</h2>
+                    <span class="page-badge">หน้า 6</span>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 p-6 rounded-xl shadow-sm mb-8 text-center">
+                    <h3 class="font-bold text-xl text-blue-900 mb-4">ลองจินตนาการเรื่อง "สูตรอาหาร" 🍳</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        ถ้าผมให้ <strong>"สูตรกะเพราไก่" (Source Code)</strong> คุณไปทำที่บ้าน...<br>
+                        รสชาติอาจจะไม่เหมือนที่ผมทำ เพราะน้ำปลาคนละยี่ห้อ ไฟแรงไม่เท่ากัน<br>
+                        <span class="text-red-500 font-bold">(นี่คือปัญหา "Environment ไม่เหมือนกัน")</span>
+                    </p>
+
+                    <div class="bg-white p-4 rounded-lg inline-block border border-blue-100 shadow-sm">
+                        <div class="text-4xl mb-2">🍱</div>
+                        <p class="text-sm font-bold text-blue-800">Docker = "อาหารกล่องสำเร็จรูป"</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="border border-red-200 bg-red-50 p-5 rounded-xl">
+                        <strong class="block text-red-800 mb-2">❌ Virtual Machine</strong>
+                        <p class="text-xs text-slate-600 mb-2">เหมือน: "สร้างบ้านใหม่ทั้งหลัง"</p>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1">
+                            <li>ต้องลง Windows ใหม่ทั้งตัว</li>
+                            <li>หนักเครื่อง (กิน Ram/CPU เยอะ)</li>
+                            <li>เปิดช้า (เป็นนาที)</li>
+                        </ul>
+                    </div>
+                    <div class="border-2 border-green-400 bg-white p-5 rounded-xl shadow-lg">
+                        <strong class="block text-green-700 mb-2 text-lg">✅ Docker Container</strong>
+                        <p class="text-xs text-green-600 mb-2">เหมือน: "เช่าห้องโรงแรม"</p>
+                        <ul class="list-disc list-inside text-xs text-green-700 font-medium space-y-1">
+                            <li>แชร์ OS Kernel</li>
+                            <li>เบามาก (มีแค่แอปที่ต้องใช้)</li>
+                            <li>เปิดปุ๊บติดปั๊บ (วินาที)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 7: DOCKER STRUCTURE -->
+            <section id="p7" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">7. Docker Structure (ส่วนประกอบสำคัญ)</h2>
+                    <span class="page-badge">หน้า 7</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-white border p-4 rounded-lg shadow-sm border-l-4 border-l-gray-400">
+                            <strong class="text-slate-700 block mb-1">1. Dockerfile 📄</strong>
+                            <p class="text-sm text-slate-600">
+                                คือ "พิมพ์เขียว" บอกว่าแอปต้องใช้อะไร (Python 3.9, copy ไฟล์ไหน)
+                            </p>
+                        </div>
+                        <div class="bg-white border p-4 rounded-lg shadow-sm border-l-4 border-l-blue-400">
+                            <strong class="text-slate-700 block mb-1">2. Docker Image 💿</strong>
+                            <p class="text-sm text-slate-600">
+                                คือ "แม่พิมพ์" สร้างมาจาก Dockerfile เป็น Read-only
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-white border p-4 rounded-lg shadow-sm border-l-4 border-l-green-400">
+                            <strong class="text-slate-700 block mb-1">3. Docker Container 📦</strong>
+                            <p class="text-sm text-slate-600">
+                                คือ "ร่างโคลนที่ทำงานจริง" สร้างจาก Image สามารถเขียนข้อมูลได้
+                            </p>
+                        </div>
+                        <div class="bg-white border p-4 rounded-lg shadow-sm border-l-4 border-l-purple-400">
+                            <strong class="text-slate-700 block mb-1">4. Docker Registry ☁️</strong>
+                            <p class="text-sm text-slate-600">
+                                คือ "ที่เก็บ Image" เช่น Docker Hub
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 8: DOCKER WORKFLOW -->
+            <section id="p8" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">8. Docker Workflow & Commands</h2>
+                    <span class="page-badge">หน้า 8</span>
+                </div>
+
+                <h4 class="font-bold text-slate-700 mb-3">คำสั่งที่ใช้บ่อย (Cheatsheet)</h4>
+                <div class="space-y-3">
+                    <div class="code-block p-3">
+                        <span class="text-xs text-gray-400">1. สร้าง Image จาก Dockerfile</span>
+                        <br>
+                        <code class="text-sm font-mono"><span class="text-blue-400">docker build</span> -t my-app-name .</code>
+                    </div>
+
+                    <div class="code-block p-3">
+                        <span class="text-xs text-gray-400">2. รัน Container จาก Image</span>
+                        <br>
+                        <code class="text-sm font-mono"><span class="text-green-400">docker run</span> -d -p 80:80 my-app-name</code>
+                    </div>
+
+                    <div class="code-block p-3">
+                        <span class="text-xs text-gray-400">3. ดู Container ที่ทำงาน</span>
+                        <br>
+                        <code class="text-sm font-mono"><span class="text-purple-400">docker ps</span></code>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 9: IaC -->
+            <section id="p9" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">9. Infrastructure as Code (IaC) คืออะไร?</h2>
+                    <span class="page-badge">หน้า 9</span>
+                </div>
+
+                <div class="bg-purple-50 border-l-4 border-purple-500 p-8 rounded-r-lg mb-8 shadow-sm">
+                    <h3 class="font-bold text-purple-900 mb-2 text-lg">🏗️ IaC ในมุมมอง DevOps</h3>
+                    <p class="text-base text-purple-800 leading-relaxed">
+                        <strong>Infrastructure as Code (IaC)</strong> คือการจัดการโครงสร้าง IT ผ่าน<strong>"การเขียนโค้ด"</strong>
+                        แทนการต้องไปกดตั้งค่าเองทีละส่วน (Manual Configuration)
+                    </p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <h4 class="font-bold text-slate-700 mb-4">ทำไมถึงสำคัญกับ DevOps?</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="flex gap-3">
+                            <div class="bg-purple-100 text-purple-600 w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+                            <div>
+                                <strong class="block text-sm text-slate-800">Version Control</strong>
+                                <p class="text-xs text-slate-600">เก็บ Config ไว้ใน Git เหมือนโค้ด</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="bg-purple-100 text-purple-600 w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+                            <div>
+                                <strong class="block text-sm text-slate-800">Automation</strong>
+                                <p class="text-xs text-slate-600">สร้าง/แก้/ลบ Server โดยอัตโนมัติ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 10: BENEFITS OF IaC -->
+            <section id="p10" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">10. ประโยชน์ของ IaC (Why IaC?)</h2>
+                    <span class="page-badge">หน้า 10</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-2xl">⚡</span>
+                            <h3 class="font-bold text-slate-700">ความเร็ว</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">สร้าง Server 100 เครื่องได้ในนาที</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-2xl">🎯</span>
+                            <h3 class="font-bold text-slate-700">ความสม่ำเสมอ</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">ทุกเครื่องเหมือนกันเป๊ะตามโค้ด</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-2xl">🕰️</span>
+                            <h3 class="font-bold text-slate-700">ตรวจสอบย้อนกลับ</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">มี Git history สามารถ rollback ได้</p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-2xl">💰</span>
+                            <h3 class="font-bold text-slate-700">ลดต้นทุน</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">เปิด-ปิดเครื่องตามต้องการ</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 11: MANUAL VS IaC -->
+            <section id="p11" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">11. Manual vs IaC</h2>
+                    <span class="page-badge">หน้า 11</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-gray-50 border-2 border-gray-200 rounded-xl p-6">
+                        <h3 class="font-bold text-gray-700 text-lg mb-4">🐢 แบบเก่า (Manual)</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>💻 Develop locally</li>
+                            <li>📤 ส่ง File ให้ทีม Ops</li>
+                            <li>🧪 ทีม QA test ด้วยมือ</li>
+                            <li>👤 Ops login server deploy</li>
+                            <li>💥 ความเสี่ยง: Human Error</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-purple-50 border-2 border-purple-200 rounded-xl p-6">
+                        <h3 class="font-bold text-purple-800 text-lg mb-4">🚀 แบบใหม่ (IaC)</h3>
+                        <ul class="space-y-2 text-sm text-purple-800">
+                            <li>💻 Develop locally</li>
+                            <li>🚀 Git push → Automatic!</li>
+                            <li>🤖 ทดสอบ & Build หลายครั้ง</li>
+                            <li>☕ Deploy โดยอัตโนมัติ</li>
+                            <li>✨ Bug ลด Error ลด</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 12: TERRAFORM -->
+            <section id="p12" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">12. Terraform คืออะไร?</h2>
+                    <span class="page-badge">หน้า 12</span>
+                </div>
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4">🤖</div>
+                    <h3 class="text-xl font-bold text-slate-700 mb-2">"หุ่นยนต์รับเหมาก่อสร้าง"</h3>
+                    <p class="text-sm text-slate-600">Terraform ช่วยสร้าง Server ให้โดยใช้โค้ด แทนการกดเองใน AWS Console</p>
+                </div>
+                <div class="bg-slate-900 text-gray-300 p-4 rounded-xl font-mono text-xs text-left">
+                    <span class="text-gray-500">// ตัวอย่างแปลน (Declarative)</span><br>
+                    <span class="text-purple-400">resource</span> "aws_instance" "web_server" {<br>
+                    &nbsp;&nbsp;ami = "ami-12345678"<br>
+                    &nbsp;&nbsp;instance_type = "t2.micro"<br>
+                    }
+                </div>
+            </section>
+
+            <!-- PAGE 13: TERRAFORM WORKFLOW -->
+            <section id="p13" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">13. Terraform Workflow</h2>
+                    <span class="page-badge">หน้า 13</span>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 p-3 bg-white border border-gray-200 rounded-lg">
+                        <span class="text-2xl font-bold text-blue-600 w-8">1</span>
+                        <div>
+                            <strong class="text-slate-700">terraform init</strong>
+                            <p class="text-xs text-slate-500">เตรียมระบบ ดึง plugin AWS</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-3 bg-white border border-gray-200 rounded-lg">
+                        <span class="text-2xl font-bold text-blue-600 w-8">2</span>
+                        <div>
+                            <strong class="text-slate-700">terraform plan</strong>
+                            <p class="text-xs text-slate-500">วางแปลนแสดงว่าจะสร้าง/แก้/ลบอะไรบ้าง</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-3 bg-white border border-gray-200 rounded-lg">
+                        <span class="text-2xl font-bold text-green-600 w-8">3</span>
+                        <div>
+                            <strong class="text-slate-700">terraform apply</strong>
+                            <p class="text-xs text-slate-500">สั่งให้สร้างจริง ก้อมอ! Server ขึ้นมา 50 100 เครื่อง</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-3 bg-red-50 border-2 border-red-200 rounded-lg">
+                        <span class="text-2xl font-bold text-red-600 w-8">4</span>
+                        <div>
+                            <strong class="text-red-700">terraform destroy</strong>
+                            <p class="text-xs text-red-600">ลบเครื่องทั้งหมด (เพื่อประหยัดค่า Cloud)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 14: CI/CD FLOW -->
+            <section id="p14" class="hidden max-w-4xl mx-auto fade-in">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-slate-800">14. Basic CI/CD Flow Diagram</h2>
+                    <span class="page-badge">หน้า 14</span>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 overflow-x-auto shadow-sm">
+                    <div class="flex items-center justify-center gap-3 text-center text-sm">
+                        <div class="bg-orange-100 p-3 rounded-lg min-w-max">
+                            📝<br><strong>Dev</strong><br>Push Code
+                        </div>
+                        <div class="text-blue-500">→</div>
+                        <div class="bg-blue-100 p-3 rounded-lg min-w-max">
+                            🔄<br><strong>CI</strong><br>Build + Test
+                        </div>
+                        <div class="text-green-500">→</div>
+                        <div class="bg-green-100 p-3 rounded-lg min-w-max">
+                            📦<br><strong>CD</strong><br>Deploy
+                        </div>
+                        <div class="text-purple-500">→</div>
+                        <div class="bg-purple-100 p-3 rounded-lg min-w-max">
+                            🚀<br><strong>Live</strong><br>Production
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center text-xs text-gray-500 mt-4">นี่คือภาพรวมของสิ่งที่เราจะทำใน Module 3</p>
+            </section>
+
+            <div class="mt-12 flex justify-between max-w-4xl mx-auto">
+                <a href="module1.html" class="text-blue-600 hover:text-blue-800 font-semibold">← Back to Module 1</a>
+                <a href="module3.html" class="text-blue-600 hover:text-blue-800 font-semibold">Next: Module 3 →</a>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function nav(targetId) {
+            document.querySelectorAll('section').forEach(sec => {
+                sec.classList.add('hidden');
+                sec.classList.remove('fade-in');
+            });
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.classList.remove('hidden');
+                void target.offsetWidth;
+                target.classList.add('fade-in');
+            }
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.target === targetId) btn.classList.add('active');
+            });
+            document.getElementById('mainContent').scrollTop = 0;
+            localStorage.setItem('currentPage', targetId);
+            window.location.hash = targetId;
+        }
+
+        function initPage() {
+            let pageToShow = 'p6';
+            if (window.location.hash) {
+                const hashPage = window.location.hash.substring(1);
+                if (document.getElementById(hashPage)) {
+                    pageToShow = hashPage;
+                }
+            } else if (localStorage.getItem('currentPage')) {
+                const savedPage = localStorage.getItem('currentPage');
+                if (document.getElementById(savedPage)) {
+                    pageToShow = savedPage;
+                }
+            }
+            nav(pageToShow);
+        }
+
+        initPage();
+    </script>
+</body>
+
+</html>

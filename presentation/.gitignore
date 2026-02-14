@@ -1,0 +1,19 @@
+# --- Terraform ---
+Terraform/.terraform/
+Terraform/.terraform/*
+Terraform/*.tfstate
+Terraform/*.tfstate.*
+Terraform/terraform.tfvars
+
+# Provider lock file (เลือกอย่างใดอย่างหนึ่ง)
+# ถ้าอยาก fix version provider ให้ทีม → อย่า ignore
+Terraform/.terraform.lock.hcl
+
+# Logs / crashes
+Terraform/crash.log
+Terraform/crash.*.log
+
+# SSH keys
+Terraform/trf-key-presentation
+Terraform/trf-key-presentation.pub
+

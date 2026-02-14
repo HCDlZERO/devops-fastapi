@@ -1,0 +1,61 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  # 1. ตั้งชื่อ App ของคุณ (ใช้อักษรเล็กและขีดกลาง)
+  DOCKER_APP_NAME: my-ai-devop-app
+  
+  # 2. แก้ไข Image Name ให้ตรงกับ Secret ที่ตั้งไว้
+  # ถ้าใน Secret DOCKER_REPO คุณใส่เป็น "username/repo" แล้ว
+  # ให้ลบ ${{ secrets.DOCKER_USERNAME }}/ ข้างหน้าออกครับ ใช้แค่อันเดียวพอ
+  IMAGE_NAME: ${{ secrets.DOCKER_REPO }}
+  
+  IMAGE_TAG: latest
+
+jobs:
+  Build-and-Push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+          -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build & Push Docker Image
+      run: |
+        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker push $IMAGE_NAME:$IMAGE_TAG
+
+  Deploy-to-EC2:
+    needs: Build-and-Push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: SSH and Deploy
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        script: |
+          # Login Docker บน Server
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+            -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          
+          # ดึง Image ใหม่มา
+          docker pull $IMAGE_NAME:$IMAGE_TAG
+          
+          # ลบ Container ตัวเก่า (ถ้ามี)
+          docker stop ${{ env.DOCKER_APP_NAME }} || true
+          docker rm ${{ env.DOCKER_APP_NAME }} || true
+          
+          # รัน Container ใหม่ (สำคัญ: Port 8000:8000)
+          # เพราะ Code คุณรัน port 8000 และ Security Group เปิด port 8000 ไว้
+          docker run -d --name ${{ env.DOCKER_APP_NAME }} -p 8000:8000 $IMAGE_NAME:$IMAGE_TAG

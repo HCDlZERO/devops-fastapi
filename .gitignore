@@ -1,0 +1,19 @@
+# .gitignore
+
+# ❌ ไม่เอาโฟลเดอร์เครื่องมือ Terraform
+.terraform/
+.terraform.lock.hcl
+
+# ❌ ไม่เอาไฟล์สถานะ (State) - อันนี้สำคัญมาก อาจมีรหัสผ่านหลุด
+*.tfstate
+*.tfstate.backup
+
+# ❌ ไม่เอากุญแจต่างๆ
+*.pem
+.env
+terraform-ec2-key
+terraform-ec2-key.pub
+
+# ❌ ไม่เอาโฟลเดอร์ Environment ของ Python
+venv/
+__pycache__/

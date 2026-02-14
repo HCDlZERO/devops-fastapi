@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps 101: From Zero to Hero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .module-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .module-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Timeline Styles */
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid #e2e8f0;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item:last-child {
+            border-left: none;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #050816;
+            overflow-x: hidden;
+        }
+
+        /* 🌌 Base Galaxy */
+        .galaxy-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(
+                circle at top,
+                #0a0f2c 0%,
+                #0b1d3a 35%,
+                #1b3b6f 65%,
+                #d4af37 100%
+            );
+        }
+
+        /* ✨ Nebula Glow */
+        .galaxy-bg::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(90,120,255,0.35), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,215,150,0.25), transparent 45%);
+            filter: blur(90px);
+        }
+
+        /* ⭐ Stars */
+        .galaxy-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+                radial-gradient(1px 1px at 30% 80%, #ffe9b0, transparent),
+                radial-gradient(2px 2px at 70% 40%, #ffffff, transparent),
+                radial-gradient(1px 1px at 90% 10%, #cce6ff, transparent),
+                radial-gradient(1px 1px at 50% 60%, #ffffff, transparent);
+            background-size: 300px 300px;
+            opacity: 0.8;
+        }
+
+        /* 🌫 Grain / Noise */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.08;
+
+            background:
+                repeating-radial-gradient(
+                    circle at 0 0,
+                    rgba(255,255,255,0.04),
+                    rgba(255,255,255,0.04) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+        }
+    </style>
+</head>
+
+<body>
+    <div class="galaxy-bg"></div>
+    <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12 fade-in">
+            <div class="text-6xl mb-4">🎓</div>
+            <h1 class="text-5xl font-bold text-white mb-2">Workshop</h1>
+            <p class="text-xl text-white/90">From Zero to Hero - 3 Hour Workshop</p>
+            <p class="text-sm text-white/70 mt-2">เรียนรู้พื้นฐาน CI/CD แบบครบวงจร</p>
+        </div>
+
+        <!-- Modules Grid -->
+        <div class="grid md:grid-cols-3 gap-6 max-w-6xl w-full fade-in" style="animation-delay: 0.2s;">
+            <!-- Module 1 -->
+            <a href="modules/module1.html"
+                class="module-card rounded-2xl p-8 shadow-xl hover:shadow-2xl">
+                <div class="text-5xl mb-4">📘</div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Module 1</h2>
+                <p class="text-slate-600 mb-4 font-semibold">Concepts & Git</p>
+                <div class="space-y-2 mb-6">
+                    <p class="text-sm text-slate-600">✓ ทำไมต้องเรียน DevOps?</p>
+                    <p class="text-sm text-slate-600">✓ CI/CD Overview</p>
+                    <p class="text-sm text-slate-600">✓ Continuous Integration</p>
+                    <p class="text-sm text-slate-600">✓ Continuous Deployment</p>
+                    <p class="text-sm text-slate-600">✓ Git Version Control</p>
+                </div>
+                <div class="module-badge bg-orange-100 text-orange-700">
+                    ⏱️ 35 นาที (5 หน้า)
+                </div>
+            </a>
+
+            <!-- Module 2 -->
+            <a href="modules/module2.html"
+                class="module-card rounded-2xl p-8 shadow-xl hover:shadow-2xl">
+                <div class="text-5xl mb-4">📗</div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Module 2</h2>
+                <p class="text-slate-600 mb-4 font-semibold">Docker & Terraform</p>
+                <div class="space-y-2 mb-6">
+                    <p class="text-sm text-slate-600">✓ Docker คืออะไร?</p>
+                    <p class="text-sm text-slate-600">✓ Docker Structure & Workflow</p>
+                    <p class="text-sm text-slate-600">✓ Infrastructure as Code (IaC)</p>
+                    <p class="text-sm text-slate-600">✓ Terraform Intro & Workflow</p>
+                    <p class="text-sm text-slate-600">✓ CI/CD Flow Diagram</p>
+                </div>
+                <div class="module-badge bg-blue-100 text-blue-700">
+                    ⏱️ 40 นาที (9 หน้า)
+                </div>
+            </a>
+
+            <!-- Module 3 -->
+            <a href="modules/module3.html"
+                class="module-card rounded-2xl p-8 shadow-xl hover:shadow-2xl">
+                <div class="text-5xl mb-4">📙</div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Module 3</h2>
+                <p class="text-slate-600 mb-4 font-semibold">Hands-on Lab</p>
+                <div class="space-y-2 mb-6">
+                    <p class="text-sm text-slate-600">✓ Build Docker Image</p>
+                    <p class="text-sm text-slate-600">✓ Push ไป Docker Hub</p>
+                    <p class="text-sm text-slate-600">✓ Provision Server บน AWS</p>
+                    <p class="text-sm text-slate-600">✓ Setup GitHub Actions</p>
+                    <p class="text-sm text-slate-600">✓ Deploy อัตโนมัติ</p>
+                </div>
+                <div class="module-badge bg-green-100 text-green-700">
+                    ⏱️ 65 นาที (9 หน้า)
+                </div>
+            </a>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="max-w-4xl w-full mt-12 space-y-4 fade-in" style="animation-delay: 0.4s;">
+            <div class="bg-white/95 rounded-xl p-6 shadow-lg">
+                <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <span>⏰</span> Timeline
+                </h3>
+                <div class="pl-4">
+                    <!-- 0:00 - 0:35 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot border-gray-400"></div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                            <h3 class="font-bold text-slate-700 text-lg">Module 1: Concepts & Git</h3>
+                            <span class="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">0:00 - 0:35 (35
+                                นาที)</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">ปูพื้นฐาน CI/CD, DevOps และการใช้ Git เบื้องต้น</p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Pages 1-4: Concepts</span>
+                            <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">Page 5: Git</span>
+                        </div>
+                    </div>
+
+                    <!-- 0:35 - 1:15 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot border-blue-500"></div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                            <h3 class="font-bold text-slate-700 text-lg">Module 2: Docker & Terraform</h3>
+                            <span class="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                                0:35 - 1:15 (40 นาที)</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">เรียนรู้ Containerization และการ Build Docker Image</p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Pages 6-8: Theory
+                                Docker</span>
+                        </div>
+                    </div>
+
+                    <!-- 1:15 - 1:55 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot border-purple-500"></div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                            <h3 class="font-bold text-slate-700 text-lg">Module 2: Docker & Terraform</h3>
+                            <span class="text-sm font-mono text-purple-600 bg-purple-50 px-2 py-1 rounded">
+                                1:15 - 1:55 (40 นาที)</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">เรียนรู้ Infrastructure as Code (IaC) และการสร้าง Server
+                            จริงบน AWS</p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded border border-green-200">
+                                Pages 14: Infrastructure as Code (IaC)</span>
+                            <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
+                                Pages 9-13: Theory Terraform</span>
+                        </div>
+                    </div>
+
+                    <!-- 1:55 - 2:05 BREAK -->
+                    <div class="timeline-item pt-4">
+                        <div class="timeline-dot border-gray-300 bg-gray-300"></div>
+                        <div
+                            class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border border-dashed border-gray-300">
+                            <span class="text-xl">☕</span>
+                            <span class="font-bold text-gray-600">Break (พักเบรค)</span>
+                            <span class="text-xs text-gray-500 ml-auto">10 นาที</span>
+                        </div>
+                    </div>
+
+                    <!-- 2:05 - 2:45 -->
+                    <div class="timeline-item pt-4">
+                        <div class="timeline-dot border-green-500"></div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                            <h3 class="font-bold text-slate-700 text-lg">Module 3: Hands-on Lab</h3>
+                            <span class="text-sm font-mono text-green-600 bg-green-50 px-2 py-1 rounded">2:05 - 2:45 (40
+                                นาที)</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">ใช้ GitHub Actions เพื่อทำระบบ CI/CD</p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Page 14: Flow
+                                Diagram</span>
+                            <span
+                                class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded border border-green-200">🛠️
+                                Pages 22-23: Pipeline Lab</span>
+                        </div>
+                    </div>
+
+                    <!-- 2:45 - 3:00 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot border-red-500"></div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                            <h3 class="font-bold text-red-700 text-lg">Cleanup & Q&A</h3>
+                            <span class="text-sm font-mono text-red-600 bg-red-50 px-2 py-1 rounded">2:45 - 3:00 (15
+                                นาที)</span>
+                        </div>
+                        <div
+                            class="bg-red-50 p-3 rounded border border-red-200 text-red-800 text-sm font-bold flex items-center gap-2">
+                            <span>💣</span> Page 24: Destroy Server
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-white/95 rounded-xl p-6 shadow-lg">
+                <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <span>🎯</span> เป้าหมาย
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    หลังจากคอร์สนี้ คุณจะสามารถสร้าง CI/CD Pipeline ที่อัตโนมัติได้
+                    ตั้งแต่ git push โค้ด ไปจนถึง deploy บน Production Server
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="max-w-6xl w-full mt-12 text-center fade-in" style="animation-delay: 0.6s;">
+            <p class="text-white/70 text-sm">
+                💡 คลิกที่ module ไหนสักอันเพื่อเริ่มเรียน
+            </p>
+        </div>
+    </div>
+
+</body>
+
+</html>
